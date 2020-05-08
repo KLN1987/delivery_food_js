@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 const cartButton = document.querySelector("#cart-button");
 const modal = document.querySelector(".modal");
@@ -16,20 +16,33 @@ const loginInput = document.querySelector("#login");
 const userName = document.querySelector(".user-name");
 const buttonOut = document.querySelector(".button-out");
 const cardsMenu = document.querySelector(".cards-menu");
-const restaurantTitle = document.querySelector('.restaurant-title');
-const cardRating = menu.querySelector('.rating');
+const restaurantTitle = document.querySelector(".restaurant-title");
+const cardRating = menu.querySelector(".rating");
 const cardPrice = menu.querySelector(".price");
 const cardCategory = menu.querySelector(".category");
 const inputSearch = document.querySelector(".input-search");
-const modalBody = document.querySelector('.modal-body');
-const modalPricetag = document.querySelector('.modal-pricetag');
-const buttomClearCart = document.querySelector('.clear-cart');
-const modalCart = document.querySelector('.modal-cart');
-const buttomOrderCart = modalCart.querySelector('.button-primary');
+const modalBody = document.querySelector(".modal-body");
+const modalPricetag = document.querySelector(".modal-pricetag");
+const buttomClearCart = document.querySelector(".clear-cart");
+
+const modalCart = document.querySelector(".modal-cart");
+const buttomOrderCart = modalCart.querySelector(".button-primary");
  
-let login = localStorage.getItem('delivery');
+let login = localStorage.getItem("delivery");
 
 const cart = [];
+
+const loadCart = function() {
+  if (localStorage.getItem(login)) {
+    JSON.parse(localStorage.getItem(login)).forEach(function(item){
+      cart.push(item);
+    });
+  }
+};
+
+const saveCart = function() {
+  localStorage.setItem(login, JSON.stringify(cart));
+};
 
 const getData = async function (url) {
 
@@ -54,36 +67,38 @@ function toggleModal() {
 
 function toggleModalAuth() {
   modalAuth.classList.toggle("is-open");
-  loginInput.style.borderColor = '';
+  loginInput.style.borderColor = "";
   loginInput.value="";
 };
 
 function returnMain() {
-  containerPromo.classList.remove('hide');
-  restaurants.classList.remove('hide');
-  menu.classList.add('hide');
+  containerPromo.classList.remove("hide");
+  restaurants.classList.remove("hide");
+  menu.classList.add("hide");
 }
 
 function authorized() {
 
   function logOut() {
     login = null;
-    localStorage.removeItem('delivery');
+    cart.length = 0;
+    localStorage.removeItem("delivery");
     buttonAuth.style.display = "";
     userName.style.display = "";
     buttonOut.style.display = "";
     cartButton.style.display = "";
-    buttonOut.removeEventListener('click', logOut);
+    buttonOut.removeEventListener("click", logOut);
     checkAuth();
     returnMain();
   }
 
   buttonAuth.style.display = "none";
   userName.textContent = login;
-  userName.style.display = 'inline';
-  buttonOut.style.display = 'flex';
-  cartButton.style.display = 'flex';
-  buttonOut.addEventListener('click', logOut);
+  userName.style.display = "inline";
+  buttonOut.style.display = "flex";
+  cartButton.style.display = "flex";
+  buttonOut.addEventListener("click", logOut);
+  loadCart();
 };
 
 function notAuthorized() {
@@ -95,13 +110,13 @@ function notAuthorized() {
 
       login = loginInput.value;
 
-      localStorage.setItem('delivery', login);
+      localStorage.setItem("delivery", login);
 
       toggleModalAuth();
 
-      buttonAuth.removeEventListener('click', toggleModalAuth);
-      closeAuth.removeEventListener('click', toggleModalAuth);
-      logInForm.removeEventListener('submit', logIn);
+      buttonAuth.removeEventListener("click", toggleModalAuth);
+      closeAuth.removeEventListener("click", toggleModalAuth);
+      logInForm.removeEventListener("submit", logIn);
 
       logInForm.reset(); //очистка полей ввода
 
@@ -114,9 +129,9 @@ function notAuthorized() {
 
   };
 
-  buttonAuth.addEventListener('click', toggleModalAuth);
-  closeAuth.addEventListener('click', toggleModalAuth);
-  logInForm.addEventListener('submit', logIn);
+  buttonAuth.addEventListener("click", toggleModalAuth);
+  closeAuth.addEventListener("click", toggleModalAuth);
+  logInForm.addEventListener("submit", logIn);
 };
 
 function checkAuth() {
@@ -171,9 +186,9 @@ function createCardGood(goods) {
     image
   } = goods;
 
-  const card = document.createElement('div');
+  const card = document.createElement("div");
 
-  card.className = 'card';
+  card.className = "card";
   card.insertAdjacentHTML("beforeend", `
       <img src="${image}" alt="image" class="card-image"/>
       <div class="card-text">
@@ -200,7 +215,7 @@ function createCardGood(goods) {
 function openGoods(evt) {
   const target = evt.target;
 
-  const restaurant = target.closest('.card-restaurant'); //closest() поднимается выше по элементам и проверяет куда кликнули, есть ли этот элемент. если кликнуть вне карточки, то вернет null
+  const restaurant = target.closest(".card-restaurant"); //closest() поднимается выше по элементам и проверяет куда кликнули, есть ли этот элемент. если кликнуть вне карточки, то вернет null
   if (restaurant) {
     if (userName.style.display) {
       cardsMenu.textContent = "";
@@ -208,9 +223,9 @@ function openGoods(evt) {
       restaurants.classList.add("hide");
       menu.classList.remove("hide");
 
-      restaurantTitle.textContent = restaurant.querySelector('.card-title').textContent;
+      restaurantTitle.textContent = restaurant.querySelector(".card-title").textContent;
       cardRating.textContent = restaurant.querySelector(".rating").textContent;
-      cardPrice.textContent = 'От ' + restaurant.querySelector(".price").textContent;
+      cardPrice.textContent = "От " + restaurant.querySelector(".price").textContent;
       cardCategory.textContent = restaurant.querySelector(".category").textContent;
 
       getData(`./db/${restaurant.dataset.products}`).then(function (data) {
@@ -226,12 +241,12 @@ function openGoods(evt) {
 function addToCart(evt) {
 
   const target = evt.target;
-  const buttonAddToCard = target.closest('.button-add-cart');
+  const buttonAddToCard = target.closest(".button-add-cart");
 
   if (buttonAddToCard) {
-    const card = target.closest('.card');
-    const title = card.querySelector('.card-title-reg').textContent;
-    const cost = card.querySelector('.card-price').textContent;
+    const card = target.closest(".card");
+    const title = card.querySelector(".card-title-reg").textContent;
+    const cost = card.querySelector(".card-price").textContent;
     const id = buttonAddToCard.id;
 
     const food = cart.find(function (item) {
@@ -247,13 +262,13 @@ function addToCart(evt) {
         cost,
         count: 1
       });
-      
     }
   }
+  saveCart();
 };
 
 function renderCart() {
-  modalBody.textContent = '';
+  modalBody.textContent = "";
 
   cart.forEach(function ({
     id,
@@ -273,53 +288,52 @@ function renderCart() {
       </div>
     `;
 
-    modalBody.insertAdjacentHTML('afterbegin', objCart);
+    modalBody.insertAdjacentHTML("afterbegin", objCart);
   });
 
   const totalPrice = cart.reduce(function (result, item) {
     return result + (parseFloat(item.cost)) * item.count;
   }, 0)
 
-  modalPricetag.textContent = totalPrice + ' ₽';
+  modalPricetag.textContent = totalPrice + " ₽";
 };
 
 function changeCount(evt) {
   const target = evt.target;
 
-  if (target.classList.contains('counter-button')) {
+  if (target.classList.contains("counter-button")) {
     const food = cart.find(function (item) {
       return item.id === target.dataset.id
     });
-    if (target.classList.contains('counter-minus')) {
+    if (target.classList.contains("counter-minus")) {
       food.count--;
       if (food.count === 0) {
         cart.splice(cart.indexOf(food), 1);
       }
     }
-    if (target.classList.contains('counter-plus')) {
+    if (target.classList.contains("counter-plus")) {
       food.count++;
     };
     renderCart();
   }
+  saveCart();
 };
 
 function init() {
   /* создает массив с данными */
-  getData('./db/partners.json').then(function (data) {
+  getData("./db/partners.json").then(function (data) {
     data.forEach(createCardsRestaurants);
   });
 
-  buttomClearCart.addEventListener('click', function() {
+  buttomClearCart.addEventListener("click", function() {
     cart.length = 0;
     renderCart();
   });
 
-  buttomOrderCart.addEventListener('click', toggleModal);
+  modalBody.addEventListener("click", changeCount);
 
-  modalBody.addEventListener('click', changeCount);
-
-  cardsRestaurants.addEventListener('click', openGoods);
-  logo.addEventListener('click', returnMain);
+  cardsRestaurants.addEventListener("click", openGoods);
+  logo.addEventListener("click", returnMain);
 
   cartButton.addEventListener("click", function () {
     renderCart();
@@ -328,11 +342,11 @@ function init() {
   
   close.addEventListener("click", toggleModal);
 
-  cardsMenu.addEventListener('click', addToCart);
+  cardsMenu.addEventListener("click", addToCart);
 
 
   //поиск по продуктам 
-  inputSearch.addEventListener('keydown', function (evt) {
+  inputSearch.addEventListener("keydown", function (evt) {
     if (evt.keyCode === 13) {
       const target = evt.target;
       const value = target.value.toLowerCase().trim();
@@ -349,7 +363,7 @@ function init() {
 
       const goods = [];
 
-      getData('./db/partners.json').then(function (data) {
+      getData("./db/partners.json").then(function (data) {
         const products = data.map(function (item) {
           return item.products;
         });
@@ -366,10 +380,10 @@ function init() {
               restaurants.classList.add("hide");
               menu.classList.remove("hide");
 
-              restaurantTitle.textContent = 'Результат поиска';
-              cardRating.textContent = '';
-              cardPrice.textContent = '';
-              cardCategory.textContent = '';
+              restaurantTitle.textContent = "Результат поиска";
+              cardRating.textContent = "";
+              cardPrice.textContent = "";
+              cardCategory.textContent = "";
 
               return searchGoods;
             })
@@ -383,7 +397,7 @@ function init() {
 
   checkAuth();
 
-  new Swiper('.swiper-container', {
+  new Swiper(".swiper-container", {
     loop: true,
     autoplay: {
       delay: 3000,
